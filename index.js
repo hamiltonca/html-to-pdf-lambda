@@ -17,11 +17,7 @@ async function handler(event, context) {
     });
     console.log("browser launched, setting up page.");
     let page = await browser.newPage();
-    //const loaded = await page.waitForNavigation({ waitUntil: "load"})
     await page.setContent(reqContent)
-    // console.log("page content set... setting emulateMediaType...")
-    console.log(Object.getOwnPropertyNames(page))
-    //await page.emulateMediaType('screen')
     console.log("page content set... generating pdf")
     const pdf = await page.pdf({
         format: "letter",
