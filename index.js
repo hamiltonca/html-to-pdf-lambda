@@ -1,6 +1,6 @@
 const chromium = require('chrome-aws-lambda')
 const fs = require('fs')
-async function handler(event, context) {
+exports.handler = async (event, context) => {
     console.log('## ENVIRONMENT VARIABLES: ' + JSON.stringify(process.env))
     console.log('## CONTEXT: ' + JSON.stringify(context))
     console.log('## EVENT: ' + JSON.stringify(event))
@@ -48,7 +48,7 @@ const formatResponse = function(body) {
 //     return "hello"
 // }
 const event = {body:"<html><body><h1>hello</h1></body></html>"}
-const pdf = handler(event, {})
+const pdf = exports.handler(event, {})
 pdf.then( content => {
     console.log("pdf: " + content)
 }).catch( error => {
@@ -65,4 +65,3 @@ pdf.then( content => {
 
 
 //
-//exports = handler
