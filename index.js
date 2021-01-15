@@ -9,12 +9,12 @@ exports.handler = async (event, context) => {
     try {
         const reqContent = event.body
         console.log("request content: " + reqContent)
-        console.log("launching browser... IS_OFFLINE: " + process.env.IS_OFFLINE)
+        console.log("launching browser...")
         browser = await chromium.puppeteer.launch({
             args: chromium.args,
             defaultViewport: chromium.defaultViewport,
             executablePath: await chromium.executablePath,
-            headless: chromium.headless,
+            headless: true,
             ignoreHTTPSErrors: true
         });
         console.log("browser launched, setting up page.");
