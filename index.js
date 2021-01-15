@@ -10,10 +10,11 @@ exports.handler = async (event, context) => {
         const reqContent = event.body
         console.log("request content: " + reqContent)
         console.log("launching browser...")
+        const executablePath = await chromium.executablePath
         browser = await chromium.puppeteer.launch({
             args: chromium.args,
             defaultViewport: chromium.defaultViewport,
-            executablePath: await chromium.executablePath,
+            executablePath: executablePath,
             headless: true,
             ignoreHTTPSErrors: true
         });
@@ -59,10 +60,12 @@ const formatResponse = function(body) {
 // async function handler(event, context) {
 //     return "hello"
 // }
+const testfile = 'testfile.pdf'
 const event = {body:"<html><body><h1>hello</h1></body></html>"}
 const pdf = exports.handler(event, {})
 pdf.then( content => {
-    console.log("pdf: " + content)
+    console.log("pdf produced. Writing to file: " + testfile)
+    fs.writeFileSync(testfile, content.body.toString())
 }).catch( error => {
     console.error("Error:" + error)
 })
