@@ -32,12 +32,12 @@ exports.handler = async (event, context) => {
 
     }
     catch(e) {
-        console.error("exception caught " + e)
+        console.error("exception caught ", e)
     }
     finally {
         if (browser) {
             console.log("closing browser")
-            browser.close()
+            await browser.close()
             console.log("browser closed, returning content")
         }
     }
