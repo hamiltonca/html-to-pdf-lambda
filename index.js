@@ -1,6 +1,5 @@
 const chromium = require('chrome-aws-lambda')
-const fs = require('fs')
-exports.handler = async (event, context) => {
+async function getpdf(event, context) {
     console.log('## ENVIRONMENT VARIABLES: ' + JSON.stringify(process.env))
     console.log('## CONTEXT: ' + JSON.stringify(context))
     console.log('## EVENT: ' + JSON.stringify(event))
@@ -24,16 +23,16 @@ exports.handler = async (event, context) => {
         console.log("page content set... generating pdf")
         const pdf = await page.pdf({
             format: "letter",
-            headless: true,
             printBackground:true
         })
-        const retContent = formatResponse(pdf.toString('utf-8'))
-        console.log("retContent: " + retContent)
-        return formatResponse(retContent)
+        const retContent = formatResponse(pdf)
+        console.log("retContent: " + JSON.stringify(retContent))
+        return retContent
 
     }
     catch(e) {
         console.error("exception caught ", e)
+        return formatError(e)
     }
     finally {
         if (browser) {
@@ -43,40 +42,44 @@ exports.handler = async (event, context) => {
         }
     }
 }
-const formatResponse = function(body) {
+function formatResponse(pdf) {
     console.log("formatting response")
-    const response = {
+    return {
         "statusCode": 200,
         "headers" : {
-        "Content-Type": "application/pdf"
+            "Content-Type": "application/pdf"
         },
-        "body" : body
+        "body" : pdf
     }
-    return response
 }
-// // function complete (content) {
-// //     console.log(content)
-// // }
-// async function handler(event, context) {
-//     return "hello"
-// }
+function formatError(e) {
+    console.log("formatting error response")
+    return {
+        "statusCode" : 500,
+        "headers" : {
+            "Content-type" : "text/plain"
+        },
+        "body" : "An error occurred." + e.toString()
+
+    }
+}
+exports.handler = getpdf
+
+/**
+ * Start test code that can run locally.
+ * Writes the pdf file "testfile.pdf" to the local dir
+ * with the test content below.
+ *
+ */
+
 const testfile = 'testfile.pdf'
 const event = {body:"<html><body><h1>hello</h1></body></html>"}
 const pdf = exports.handler(event, {})
+
+const fs = require('fs')
 pdf.then( content => {
     console.log("pdf produced. Writing to file: " + testfile)
-    fs.writeFileSync(testfile, content.body.toString())
+    fs.writeFileSync(testfile, content.body)
 }).catch( error => {
-    console.error("Error:" + error)
+    console.error("Error:", error)
 })
-// const pdf = handler(event,{})
-//     .then( content => {
-//         console.log("Content:" + content)
-//         //fs.writeFileSync('testfile.pdf', content)
-//     })
-//     .catch(error => console.error("error", error)).then( hugh => {
-//         console.log("hugh?:" + hugh)
-//     }).catch (error => console.error("Error on hugh:", error))
-
-
-//
